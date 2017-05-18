@@ -1,0 +1,159 @@
+<html>
+
+<head>
+	<script language="JavaScript" src="${pluginsBaseRootUrl}/web.shared/jquery.min.js"></script>
+	<script src="${pluginsBaseRootUrl}/web.shared/jquery.class.js" type="text/javascript"></script>
+	<script src="${pluginsBaseRootUrl}/web.shared/elvis_api/js/jquery.elvis.js" type="text/javascript"></script>
+	<script language="JavaScript">
+		var elvisContext = ElvisPlugin.resolveElvisContext();
+
+		function selectionUpdated() {
+			// Get current asset seelction from Elvis context
+			var hits = elvisContext.activeTab.originalAssetSelection;
+
+			// Show number of hits selected
+			var selhitsMessage = hits.length == 0 ? 'No assets selected.' : hits.length + ' asset(s) selected:';
+
+			// Show selected hits in list
+			var assetFilenamesHtml = '';
+			if (hits.length > 0) {
+				assetFilenamesHtml += '<ul>';
+				hits.forEach(function (hit) {
+					assetFilenamesHtml += '<li>' + hit.metadata.filename + '</li>';
+				});
+				assetFilenamesHtml += '</ul>'
+
+			}
+
+			$('.selectedHitCount').html(selhitsMessage);
+			$('.selectedHitsInfo').html(assetFilenamesHtml);
+			$('.hitDropResults').html('');
+			$('.elvisContextJSON').val(JSON.stringify(elvisContext, null, 2));
+		}
+
+		function dragoverHandler(ev) {
+			ev.preventDefault();
+			$('.hitDropResults').css('border-color', '#999');
+		}
+
+		function dragleaveHandler(ev) {
+			ev.preventDefault();
+			$('.hitDropResults').css('border-color', '#ccc');
+		}
+
+		function dropHandler(ev) {
+			ev.preventDefault();
+			var data = ev.dataTransfer.getData('text');
+			$('.hitDropResults').css('border-color', '#ccc');
+			$('.hitDropResults').html(JSON.stringify(JSON.parse(data), null, 2));
+		}
+
+		$(function () {
+			selectionUpdated();
+		});
+
+		// Register callback handler. This handler is called when the elvisContext changes (asset selection change)
+		elvisContext.updateCallback = selectionUpdated;
+	</script>
+	<style type="text/css">
+		@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
+		* {
+			box-sizing: border-box;
+			-webkit-font-smoothing: antialiased;
+			font-size: 12px;
+			font-weight: 400;
+		}
+
+		html,
+		body {
+			font-family: Lato, sans-serif;
+			height: 100%;
+			width: 100%;
+			padding: 0;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		h2 {
+			font-size: 20px;
+			border-bottom: 1px solid #ccc;
+		}
+
+		.assetSelection {
+			width: 100%;
+			height: 25%;
+			padding: 5px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.selectedHitCount {
+			font-size: 16px;
+			padding-bottom: 5px;
+		}
+
+		.selectedHitsInfo {
+			font-weight: 700;
+			height: 100%;
+			flex: auto;
+			overflow-y: auto;
+		}
+
+		.assetDropArea {
+			width: 100%;
+			height: 25%;
+			padding: 5px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.hitDropResults {
+			width: 100%;
+			height: 100%;
+			flex: auto;
+			overflow-y: auto;
+			border: 2px dashed #ccc;
+			border-radius: 10px;
+			padding: 5px;
+			white-space: pre;
+		}
+
+		.elvisContext {
+			width: 100%;
+			height: 50%;
+			padding: 5px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.elvisContextJSON {
+			width: 100%;
+			height: 100%;
+			border: 0;
+			flex: auto;
+			white-space: pre;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="assetDropArea" ondrop="dropHandler(event);" ondragover="dragoverHandler(event);" ondragleave="dragleaveHandler(event);">
+		<h2>Drop assets here...</h2>
+		<div class="hitDropResults"></div>
+	</div>
+
+	<div class="assetSelection">
+		<h2>Asset selection</h2>
+		<div class="selectedHitCount"></div>
+		<div class="selectedHitsInfo"></div>
+	</div>
+
+	<div class="elvisContext">
+		<h2>Data in elvisContext</h2>
+		<textarea class="elvisContextJSON"></textarea>
+	</div>
+
+</body>
+
+</html>

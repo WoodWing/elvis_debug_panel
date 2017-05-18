@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+	<info>
+		<version>
+			<pluginVersion>1.0</pluginVersion>
+			<requiresAtLeast>5.25.0.0</requiresAtLeast>
+		</version>
+		<description>Panel debug plugin</description>
+		<documentationUrl>https://github.com/WoodWing/elvis_debug_panel</documentationUrl>
+	</info>
+	<panel>
+		<url>${pluginUrl}/index.html</url>
+		
+		<iconUrl>${pluginUrl}/icon.png</iconUrl>
+
+		<panelLocations>
+			<panelLocation id="mainRightPanel" order="100"/>
+		</panelLocations>
+
+		<requiredRoles/>
+
+		<messages>
+			<entries locale="en_US">
+				<entry key="title">Debug info</entry>
+				<entry key="button.tooltip">Debug panel plugins</entry>
+			</entries>
+		</messages>
+
+	</panel>
+</plugin>
