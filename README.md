@@ -1,6 +1,8 @@
 # Elvis DAM debug panel plugin
 
-Simple sample panel plugin that shows Elvis plugin developers the integration possibilities of panel plugins 
+Simple sample panel plugin that shows Elvis plugin developers the integration possibilities of panel plugins.
+
+![debug panel plugin in action](https://github.com/WoodWing/elvis_debug_panel/blob/master/debug-panel.gif "debug panel plugin in action")
 
 ## Prerequisites
 
