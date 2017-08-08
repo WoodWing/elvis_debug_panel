@@ -21,8 +21,7 @@
 				hits.forEach(function (hit) {
 					assetFilenamesHtml += '<li>' + hit.metadata.filename + '</li>';
 				});
-				assetFilenamesHtml += '</ul>'
-
+				assetFilenamesHtml += '</ul>';
 			}
 
 			$('.selectedHitCount').html(selhitsMessage);
@@ -75,8 +74,13 @@
 		}
 
 		h2 {
-			font-size: 20px;
-			border-bottom: 1px solid #ccc;
+			color: #009ee3;
+    		font-size: 13px;
+    		font-weight: 700;
+			border-bottom: 1px solid #e5e9ea;
+			padding: 1px 0;
+			margin-top: 0;
+			margin-bottom: 5px;
 		}
 
 		.assetSelection {
@@ -88,8 +92,9 @@
 		}
 
 		.selectedHitCount {
-			font-size: 16px;
-			padding-bottom: 5px;
+			font-size: 13px;
+			font-weight: 700;
+			color: #777;
 		}
 
 		.selectedHitsInfo {
@@ -98,6 +103,18 @@
 			flex: auto;
 			overflow-y: auto;
 		}
+		
+		.selectedHitsInfo ul {
+			margin: 5px;
+ 			padding: 0px 5px;
+		}
+		
+		.selectedHitsInfo li {
+		    text-overflow: ellipsis;
+    		overflow: hidden;
+    		white-space: nowrap;
+    		list-style-position: inside;
+    	}
 
 		.assetDropArea {
 			width: 100%;
