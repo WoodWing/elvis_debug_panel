@@ -5,9 +5,14 @@
 	<script src="${pluginsBaseRootUrl}/web.shared/jquery.class.js" type="text/javascript"></script>
 	<script src="${pluginsBaseRootUrl}/web.shared/elvis_api/js/jquery.elvis.js" type="text/javascript"></script>
 	<script language="JavaScript">
-		var elvisContext = ElvisPlugin.resolveElvisContext();
+		var elvisContext;
 
 		function selectionUpdated() {
+			if (!elvisContext) {
+				// Context is no longer available, plugin is probably not longer active
+				return;
+			}
+
 			// Get current asset seelction from Elvis context
 			var hits = elvisContext.activeTab.originalAssetSelection;
 
@@ -48,11 +53,11 @@
 		}
 
 		$(function () {
+			elvisContext = ElvisPlugin.resolveElvisContext();
+			// Register callback handler. This handler is called when the elvisContext changes (asset selection change)
+			elvisContext.updateCallback = selectionUpdated;
 			selectionUpdated();
 		});
-
-		// Register callback handler. This handler is called when the elvisContext changes (asset selection change)
-		elvisContext.updateCallback = selectionUpdated;
 	</script>
 	<style type="text/css">
 		@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
@@ -75,8 +80,8 @@
 
 		h2 {
 			color: #009ee3;
-    		font-size: 13px;
-    		font-weight: 700;
+			font-size: 13px;
+			font-weight: 700;
 			border-bottom: 1px solid #e5e9ea;
 			padding: 1px 0;
 			margin-top: 0;
@@ -103,18 +108,18 @@
 			flex: auto;
 			overflow-y: auto;
 		}
-		
+
 		.selectedHitsInfo ul {
 			margin: 5px;
- 			padding: 0px 5px;
+			padding: 0px 5px;
 		}
-		
+
 		.selectedHitsInfo li {
-		    text-overflow: ellipsis;
-    		overflow: hidden;
-    		white-space: nowrap;
-    		list-style-position: inside;
-    	}
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+			list-style-position: inside;
+		}
 
 		.assetDropArea {
 			width: 100%;
