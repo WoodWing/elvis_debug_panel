@@ -2,7 +2,7 @@
 <plugin>
 	<info>
 		<version>
-			<pluginVersion>1.0</pluginVersion>
+			<pluginVersion>2.0</pluginVersion>
 			<requiresAtLeast>6.1.0.0</requiresAtLeast>
 		</version>
 		<description>Panel debug plugin</description>
