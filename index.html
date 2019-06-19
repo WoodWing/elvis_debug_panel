@@ -6,6 +6,7 @@
 	<script src="${pluginsBaseRootUrl}/web.shared/elvis_api/js/jquery.elvis.js" type="text/javascript"></script>
 	<script language="JavaScript">
 		var elvisContext;
+		var selectedAssetIds;
 
 		function selectionUpdated() {
 			if (!elvisContext) {
@@ -13,15 +14,17 @@
 				return;
 			}
 
-			// Get current asset seelction from Elvis context
+			// Get current asset selection from Elvis context
 			var hits = elvisContext.activeTab.originalAssetSelection;
+			var emptySelection = hits.length == 0;
+			selectedAssetIds = emptySelection ? null : hits.map(hit => hit.id).join(',');
 
 			// Show number of hits selected
-			var selhitsMessage = hits.length == 0 ? 'No assets selected.' : hits.length + ' asset(s) selected:';
+			var selhitsMessage = emptySelection ? 'No assets selected.' : hits.length + ' asset(s) selected:';
 
 			// Show selected hits in list
 			var assetFilenamesHtml = '';
-			if (hits.length > 0) {
+			if (!emptySelection) {
 				assetFilenamesHtml += '<ul>';
 				hits.forEach(function (hit) {
 					assetFilenamesHtml += '<li>' + hit.metadata.filename + '</li>';
@@ -33,6 +36,9 @@
 			$('.selectedHitsInfo').html(assetFilenamesHtml);
 			$('.hitDropResults').html('');
 			$('.elvisContextJSON').val(JSON.stringify(elvisContext, null, 2));
+
+			// Enable / disable elvisContext links
+			$('.selectionLink').attr('disabled', emptySelection);
 		}
 
 		function dragoverHandler(ev) {
@@ -52,15 +58,67 @@
 			$('.hitDropResults').html(JSON.stringify(JSON.parse(data), null, 2));
 		}
 
+		function openSearch() {
+			const query = window.prompt('What do you want to search for?', 'food');
+			elvisContext.openSearch(query, 'assetCreated-desc');
+		}
+
+		function openBrowse() {
+			const folderPath = window.prompt('Where do you want to browse to?', '/Demo Zone/Images');
+			elvisContext.openBrowse(folderPath, true, 'food', 'assetCreated-desc');
+		}
+
+		function openAssets() {
+			const assetId = window.prompt('What asset do you want to open? Paste your asset id here.');
+			elvisContext.openAssets(assetId);
+		}
+
+		function openContainers() {
+			const containerIds = window.prompt('What collections do you want to open? Paste a comma separated list of collection id\'s here.');
+			elvisContext.openContainers(containerIds, 'assetCreated-desc');
+		}
+
+		function activateContainers() {
+			const containerIds = window.prompt('What collections do you want to activate? Paste a comma separated list of collection id\'s here.');
+			elvisContext.activateContainers(containerIds, 'assetCreated-desc');
+		}
+
+		function checkout() {
+			if (selectedAssetIds) {
+				elvisContext.checkout(selectedAssetIds);
+			}
+		}
+
+		function checkin() {
+			if (selectedAssetIds) {
+				elvisContext.checkin(selectedAssetIds);
+			}
+		}
+
+		function cancelCheckout() {
+			if (selectedAssetIds) {
+				elvisContext.cancelCheckout(selectedAssetIds);
+			}
+		}
+
 		$(function () {
 			elvisContext = ElvisPlugin.resolveElvisContext();
 			// Register callback handler. This handler is called when the elvisContext changes (asset selection change)
 			elvisContext.updateCallback = selectionUpdated;
+			$('#openSearch').click(openSearch);
+			$('#openBrowse').click(openBrowse);
+			$('#openAssets').click(openAssets);
+			$('#openContainers').click(openContainers);
+			$('#activateContainers').click(activateContainers);
+			$('#checkout').click(checkout);
+			$('#checkin').click(checkin);
+			$('#cancelCheckout').click(cancelCheckout);
 			selectionUpdated();
 		});
 	</script>
 	<style type="text/css">
 		@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700');
+
 		* {
 			box-sizing: border-box;
 			-webkit-font-smoothing: antialiased;
@@ -75,7 +133,6 @@
 			width: 100%;
 			padding: 0;
 			margin: 0px;
-			overflow: hidden;
 		}
 
 		h2 {
@@ -88,12 +145,33 @@
 			margin-bottom: 5px;
 		}
 
-		.assetSelection {
+		a {
+			display: block;
+		}
+
+		.elvisContextFunctions {
+			padding: 5px;
+		}
+
+		.assetDropArea {
 			width: 100%;
-			height: 25%;
+			height: 150px;
 			padding: 5px;
 			display: flex;
 			flex-direction: column;
+		}
+
+		.assetSelection {
+			width: 100%;
+			max-height: 150px;
+			padding: 5px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.elvisContext {
+			width: 100%;
+			padding: 5px;
 		}
 
 		.selectedHitCount {
@@ -121,15 +199,9 @@
 			list-style-position: inside;
 		}
 
-		.assetDropArea {
-			width: 100%;
-			height: 25%;
-			padding: 5px;
-			display: flex;
-			flex-direction: column;
-		}
-
 		.hitDropResults {
+			font-family: 'Monaco', monospace;
+			font-size: 11px;
 			width: 100%;
 			height: 100%;
 			flex: auto;
@@ -140,27 +212,50 @@
 			white-space: pre;
 		}
 
-		.elvisContext {
-			width: 100%;
-			height: 50%;
-			padding: 5px;
-			display: flex;
-			flex-direction: column;
-		}
-
 		.elvisContextJSON {
+			font-family: 'Monaco', monospace;
+			font-size: 11px;
 			width: 100%;
 			height: 100%;
 			border: 0;
 			flex: auto;
 			white-space: pre;
 		}
+
+		.elvisContextLink {
+			font-family: 'Monaco', monospace;
+			font-size: 11px;
+			color: #666;
+			cursor: hand;
+		}
+
+		.elvisContextLink:hover {
+			color: #333;
+		}
+
+		.elvisContextLink[disabled] {
+			color: #ccc;
+			cursor: default;
+		}
 	</style>
 </head>
 
 <body>
 
-	<div class="assetDropArea" ondrop="dropHandler(event);" ondragover="dragoverHandler(event);" ondragleave="dragleaveHandler(event);">
+	<div class="elvisContextFunctions">
+		<h2>Functions in elvisContext, click to try...</h2>
+		<div id="openSearch" class="elvisContextLink">openSearch(q)</div>
+		<div id="openBrowse" class="elvisContextLink">openBrowse(folderPath, includeSubFolders, q, sort)</div>
+		<div id="openAssets" class="elvisContextLink">openAssets(assetIds)</div>
+		<div id="openContainers" class="elvisContextLink">openContainers(containerIds, sort)</div>
+		<div id="activateContainers" class="elvisContextLink">activateContainers(containerIds)</div>
+		<div id="checkout" class="elvisContextLink selectionLink">checkout(assetIds)</div>
+		<div id="checkin" class="elvisContextLink selectionLink">checkin(assetIds)</div>
+		<div id="cancelCheckout" class="elvisContextLink selectionLink">cancelCheckout(assetIds)</div>
+	</div>
+
+	<div class="assetDropArea" ondrop="dropHandler(event);" ondragover="dragoverHandler(event);"
+		ondragleave="dragleaveHandler(event);">
 		<h2>Drop assets here...</h2>
 		<div class="hitDropResults"></div>
 	</div>
